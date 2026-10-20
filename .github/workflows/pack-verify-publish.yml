@@ -113,7 +113,7 @@ jobs:
           esac
 
   publish:
-    name: Publish to npm${{ inputs.publish-dry-run && ' (dry run)' || '' }}
+    name: Publish to npm
     if: inputs.publish || inputs.publish-dry-run
     needs: verify
     runs-on: ubuntu-latest
