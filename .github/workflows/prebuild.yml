@@ -1,0 +1,54 @@
+# Builds the Node-API addon with prebuildify for the 8 supported platforms and
+# uploads each as a `prebuild-<platform>` artifact. Linux builds run in
+# manylinux_2_28 (glibc) and Alpine (musl) containers. See WORKFLOWS.md.
+name: Prebuild
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  prebuild:
+    name: Prebuild ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: darwin-arm64, os: macos-latest, args: --arch arm64 }
+          - { name: darwin-x64, os: macos-latest, args: --arch x64 }
+          - { name: win32-x64, os: windows-latest, args: --arch x64 }
+          - { name: win32-arm64, os: windows-11-arm, args: --arch arm64 }
+          - { name: linux-x64-glibc, os: ubuntu-latest, linux: glibc }
+          - { name: linux-arm64-glibc, os: ubuntu-24.04-arm, linux: glibc }
+          - { name: linux-x64-musl, os: ubuntu-latest, linux: musl }
+          - { name: linux-arm64-musl, os: ubuntu-24.04-arm, linux: musl }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - name: Check out the shared CI scripts
+        if: matrix.linux
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .compression-js
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - if: matrix.linux
+        run: bash .compression-js/scripts/ci/prebuild-linux.sh ${{ matrix.linux }}
+      - if: ${{ !matrix.linux }}
+        run: |
+          npm ci --ignore-scripts
+          npx prebuildify --napi --strip --target 22.0.0 ${{ matrix.args }}
+        shell: bash
+      - uses: actions/upload-artifact@v7
+        with:
+          name: prebuild-${{ matrix.name }}
+          path: prebuilds
+          if-no-files-found: error

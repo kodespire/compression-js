@@ -5,7 +5,7 @@ Node.js, Bun, Deno, browsers and edge runtimes.
 
 Each codec lives in its own repository and npm package. This repository will hold:
 - **the umbrella package:** one API across every codec, with format detection
-- **the shared build and release workflows** that the codec repositories use
+- **the shared build and release workflows** that the codec repositories use (see [WORKFLOWS.md](WORKFLOWS.md))
 - **cross-codec benchmarks**
 
 ## The family

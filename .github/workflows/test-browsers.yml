@@ -1,0 +1,49 @@
+# Typechecks, then runs the browser test suite in real browsers through
+# Playwright, against the `wasm` artifact from build-wasm.yml. See WORKFLOWS.md.
+name: Test in browsers
+
+on:
+  workflow_call:
+    inputs:
+      wasm-artifact-path:
+        description: Directory the `wasm` artifact is restored to (the same value given to build-wasm.yml).
+        type: string
+        required: true
+      browsers:
+        description: Comma-separated Playwright browsers, passed to the vitest config as BROWSERS.
+        type: string
+        default: chromium,firefox,webkit
+      vitest-config:
+        description: The vitest config for the browser suite.
+        type: string
+        default: vitest.browser.config.ts
+
+permissions:
+  contents: read
+
+jobs:
+  browsers:
+    name: Browsers (${{ inputs.browsers }})
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/download-artifact@v8
+        with:
+          name: wasm
+          path: ${{ inputs.wasm-artifact-path }}
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build:ts
+      - run: npx playwright install --with-deps ${BROWSERS//,/ }
+        env:
+          BROWSERS: ${{ inputs.browsers }}
+      - run: npx vitest run -c "$VITEST_CONFIG"
+        env:
+          VITEST_CONFIG: ${{ inputs.vitest-config }}
+          BROWSERS: ${{ inputs.browsers }}
