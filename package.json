@@ -1,0 +1,84 @@
+{
+  "name": "@kodespire/compression-js",
+  "version": "0.1.0",
+  "description": "One API for zstd, gzip, zlib, deflate, brotli, LZ4 and snappy on Node.js, Bun, Deno, browsers and edge runtimes, with format detection. Loads only the codecs you use.",
+  "keywords": [
+    "compression",
+    "decompression",
+    "zstd",
+    "gzip",
+    "zlib",
+    "deflate",
+    "brotli",
+    "lz4",
+    "snappy",
+    "wasm",
+    "napi",
+    "stream"
+  ],
+  "license": "MIT",
+  "author": "kodespire",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kodespire/compression-js.git"
+  },
+  "bugs": "https://github.com/kodespire/compression-js/issues",
+  "homepage": "https://github.com/kodespire/compression-js#readme",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.12"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./zstd": {
+      "types": "./dist/zstd.d.ts",
+      "default": "./dist/zstd.js"
+    },
+    "./lz4": {
+      "types": "./dist/lz4.d.ts",
+      "default": "./dist/lz4.js"
+    },
+    "./snappy": {
+      "types": "./dist/snappy.d.ts",
+      "default": "./dist/snappy.js"
+    },
+    "./brotli": {
+      "types": "./dist/brotli.d.ts",
+      "default": "./dist/brotli.js"
+    },
+    "./gzip": {
+      "types": "./dist/gzip.d.ts",
+      "default": "./dist/gzip.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:installed": "node test/installed/run.mjs"
+  },
+  "dependencies": {
+    "@kodespire/brotli-js": "^0.1.0",
+    "@kodespire/gzip-js": "^0.1.0",
+    "@kodespire/lz4-js": "^0.1.0",
+    "@kodespire/snappy-js": "^0.1.0",
+    "@kodespire/zstd-js": "^0.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "playwright": "^1.64.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}

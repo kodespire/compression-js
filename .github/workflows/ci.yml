@@ -1,0 +1,62 @@
+# CI for the @kodespire/compression-js package (src/ and test/). It is plain JavaScript
+# over the codec packages from npm, so nothing is built but TypeScript: no WebAssembly,
+# no native prebuilds. The other workflows in this directory are the reusable ones for
+# the codec repositories (WORKFLOWS.md); this one does not use them.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: ['22.12', '24']
+        include:
+          - { os: macos-latest, node: '24' }
+          - { os: windows-latest, node: '24' }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+      - run: npm test
+
+  installed:
+    name: Installed package on Node, Bun, Deno, Workers and browsers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: oven-sh/setup-bun@v2
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run build
+      - name: Pack, install into an empty project, and run everywhere
+        run: npm run test:installed
+        env:
+          BROWSERS: chromium,firefox,webkit

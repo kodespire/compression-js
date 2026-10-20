@@ -1,0 +1,104 @@
+gamma brotli alpha delta gamma gamma snappy delta gamma gzip alpha alpha block block brotli alpha gamma frame snappy beta zstd alpha
+beta gzip alpha brotli snappy block frame brotli brotli snappy gzip beta snappy frame block gzip gamma beta frame snappy snappy snappy block gamma delta beta block frame gzip block block alpha gzip
+beta frame beta gamma gzip brotli block zstd brotli zstd zstd gzip delta delta snappy brotli
+gamma brotli brotli delta beta
+gzip gzip frame
+beta snappy beta frame frame gamma frame gzip snappy gzip block gamma alpha zstd brotli block alpha brotli gamma gamma delta delta alpha brotli beta brotli brotli block block zstd gzip gzip frame delta gzip beta snappy gzip gamma gamma alpha brotli gzip brotli frame snappy alpha gzip brotli
+beta gzip zstd zstd frame snappy gamma alpha alpha gamma delta zstd delta alpha gamma brotli frame brotli delta alpha gamma
+delta beta beta snappy frame snappy gamma beta block block frame block gamma beta beta
+delta block frame delta gzip gzip block beta zstd snappy alpha brotli gzip
+delta frame zstd
+zstd delta delta snappy brotli block brotli alpha alpha block block zstd block gzip gamma brotli beta
+frame gamma gamma delta zstd
+zstd
+block block zstd snappy block block beta alpha brotli
+delta gzip block alpha snappy block block block beta frame brotli snappy alpha block
+zstd frame brotli gzip delta gamma gamma frame gzip brotli frame snappy zstd brotli gzip gzip gamma snappy gamma frame brotli snappy brotli block gamma delta delta beta zstd
+gamma brotli brotli snappy beta block zstd beta snappy zstd frame gzip frame brotli
+zstd zstd zstd delta gamma gzip alpha
+gamma beta zstd alpha delta gzip frame
+gzip snappy gzip gzip gzip
+gamma delta frame snappy gzip frame delta beta zstd gamma gzip frame frame frame frame alpha
+gzip frame gzip zstd brotli block brotli brotli gzip
+snappy brotli block frame snappy frame zstd beta zstd
+gzip block frame block brotli alpha snappy frame gzip block frame delta
+snappy snappy zstd beta zstd frame gzip frame gamma brotli gzip frame block alpha
+gamma zstd frame frame beta gzip gzip frame frame block snappy
+beta
+snappy snappy gzip delta gzip block gamma block snappy gzip brotli alpha gamma brotli
+frame brotli delta block frame gamma gamma zstd alpha beta delta frame zstd frame zstd block
+block alpha zstd gamma snappy gzip delta gzip gamma gamma block delta brotli gzip alpha zstd snappy beta frame zstd block zstd alpha beta
+snappy frame frame delta delta beta gzip zstd block brotli brotli block gzip gzip beta gamma block zstd snappy delta alpha block block gamma brotli gzip alpha gamma alpha zstd gamma gzip zstd snappy
+zstd brotli delta
+zstd delta gamma brotli beta gamma alpha gamma brotli alpha snappy brotli gzip beta delta gamma gamma frame frame snappy zstd delta delta beta gzip beta alpha gzip delta gamma delta frame snappy gamma gzip snappy beta zstd brotli zstd brotli brotli zstd gamma gzip zstd alpha gzip delta alpha brotli frame beta block beta brotli frame brotli alpha snappy gzip
+alpha
+snappy snappy gamma beta brotli delta snappy beta gamma brotli gzip alpha block brotli gamma frame
+frame gzip gamma
+brotli brotli zstd zstd frame frame delta brotli brotli snappy snappy gamma gzip gzip snappy delta block gamma brotli snappy brotli frame zstd snappy block alpha alpha beta zstd alpha gamma frame snappy zstd gzip alpha delta brotli beta gamma gzip gamma beta brotli delta gamma block brotli block alpha gzip frame beta frame beta brotli block alpha delta
+brotli snappy zstd snappy zstd gzip alpha beta gamma delta brotli delta alpha delta zstd block zstd delta zstd beta brotli frame alpha snappy
+delta frame gamma alpha snappy alpha block zstd zstd brotli zstd
+alpha gzip beta delta zstd frame gzip delta gzip alpha frame gzip delta gamma
+delta
+gamma brotli frame gzip snappy snappy block gzip alpha delta gzip beta block snappy brotli frame brotli
+gzip beta alpha frame alpha delta gamma delta alpha brotli snappy frame snappy brotli alpha alpha brotli snappy alpha gzip gamma block gamma
+beta gamma
+zstd beta frame snappy alpha snappy brotli block alpha delta beta beta
+delta gzip alpha snappy snappy gamma frame gamma frame zstd block alpha gamma snappy snappy delta beta block brotli beta block alpha delta delta
+gzip snappy beta beta gamma gamma frame frame
+block gzip block beta frame zstd frame zstd beta block gzip block beta zstd delta alpha zstd snappy alpha gamma gzip delta gamma frame gamma zstd brotli beta alpha beta zstd alpha brotli gamma delta brotli gamma block snappy delta zstd frame beta beta delta alpha gamma alpha alpha zstd block delta
+snappy snappy brotli gamma gamma delta alpha brotli beta
+zstd alpha
+delta block alpha gzip delta snappy delta gzip alpha gzip snappy beta beta delta block zstd
+alpha brotli block snappy brotli beta block delta delta beta
+frame
+zstd alpha brotli gzip alpha beta
+zstd
+beta snappy beta frame
+delta frame alpha delta gzip brotli alpha gamma delta alpha block gamma gamma alpha brotli zstd alpha block brotli frame delta zstd block
+snappy frame gzip snappy
+gamma alpha delta gamma gamma block snappy gamma gzip
+delta delta gzip brotli gamma block beta delta alpha alpha delta gzip alpha gamma gamma gamma snappy
+frame snappy gzip gamma gamma zstd frame zstd snappy zstd frame snappy
+gzip snappy beta delta alpha gamma delta snappy brotli alpha delta beta alpha alpha
+beta
+brotli brotli block alpha alpha snappy delta delta frame zstd brotli
+alpha gamma block gamma
+frame gamma delta gamma beta gamma brotli brotli gamma alpha zstd brotli block snappy gamma zstd gzip block zstd delta frame alpha brotli delta beta
+zstd zstd brotli block zstd snappy alpha alpha delta gzip
+snappy brotli block snappy delta delta brotli alpha snappy
+gzip block gzip delta brotli delta
+snappy gamma block snappy delta snappy alpha block delta
+alpha zstd frame gamma zstd gzip frame zstd block gzip beta gzip delta frame brotli gamma delta beta delta
+block delta block delta block zstd
+frame gzip brotli frame frame gamma gamma gzip zstd gzip gamma zstd
+delta zstd
+brotli gamma brotli snappy snappy
+block beta snappy delta brotli zstd alpha beta snappy frame zstd zstd delta brotli beta gamma snappy delta alpha gzip alpha
+beta alpha delta snappy block
+brotli zstd
+beta snappy
+block frame snappy gamma block gzip beta
+snappy zstd snappy gzip beta gamma frame block beta snappy zstd alpha
+zstd
+beta beta delta gzip gamma beta delta beta gzip gzip block alpha gzip delta alpha gzip zstd delta frame gamma block delta brotli gzip gzip beta gzip frame gamma gzip snappy
+delta brotli
+gamma frame brotli block brotli zstd zstd zstd gzip brotli brotli frame gamma brotli alpha brotli beta gzip
+frame brotli frame alpha delta alpha beta alpha
+gamma alpha frame gamma gzip gzip brotli zstd snappy zstd block alpha gamma delta gamma frame delta gzip zstd snappy block delta gamma snappy zstd brotli
+gzip gzip brotli alpha beta beta frame
+zstd beta beta frame gamma snappy frame gzip alpha alpha gzip beta beta gamma gzip delta brotli alpha beta gamma gamma brotli snappy delta gamma alpha alpha alpha alpha frame gzip alpha alpha block frame block frame alpha
+snappy zstd snappy zstd frame alpha gzip gzip frame alpha gzip gzip frame delta brotli zstd
+beta beta
+brotli snappy alpha gzip beta beta block zstd gamma gamma beta
+delta frame beta gzip alpha brotli zstd brotli brotli frame beta frame zstd delta snappy
+alpha beta gamma beta zstd gamma frame block block block delta gzip snappy
+zstd zstd block beta gamma gzip snappy alpha beta snappy brotli brotli
+zstd gzip alpha beta zstd zstd frame gamma alpha snappy
+delta delta frame brotli snappy
+beta snappy beta gamma brotli delta frame delta frame gamma zstd gzip block frame snappy alpha snappy block snappy beta delta frame
+brotli block alpha alpha alpha snappy beta gzip frame alpha snappy gzip delta zstd block gamma
+beta delta delta delta beta brotli gamma alpha gzip delta brotli zstd frame
+alpha alpha beta alpha alpha zstd gzip
+delta gamma gamma zstd gzip brotli snappy zstd delta gamma block brotli beta snappy zstd snappy frame delta frame frame zstd delta gamma beta gamma beta zstd snappy beta
+frame gamma alpha gamma brotli block snappy
+block frame alpha be
