@@ -24,7 +24,7 @@ on:
         type: boolean
         default: false
       publish-dry-run:
-        description: Run the publish job with `npm publish --dry-run` instead. Never publishes, even with `publish`.
+        description: Run the publish job with `npm publish --dry-run` instead. Never publishes, even with `publish`. Fails if the version is already on npm.
         type: boolean
         default: false
 
