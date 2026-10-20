@@ -24,7 +24,7 @@ on:
         type: boolean
         default: false
       publish-dry-run:
-        description: Run the publish job with `npm publish --dry-run` instead. Never publishes, even with `publish`. Fails if the version is already on npm.
+        description: Run the publish job with `npm stage publish --dry-run` instead. Never publishes, even with `publish`. Fails if the version is already on npm.
         type: boolean
         default: false
 
@@ -141,6 +141,10 @@ jobs:
             const { repository, ref, event_name, workflow_ref, job_workflow_ref, environment } = claims;
             console.log(JSON.stringify({ repository, ref, event_name, workflow_ref, job_workflow_ref, environment }, null, 2));
           '
-      - run: npm publish "$TARBALL_PREFIX"-*.tgz --access public --provenance ${{ inputs.publish-dry-run && '--dry-run' || '' }}
+      # npm stage publish needs npm 11.15 or later.
+      - run: npm install -g npm@^11.15
+      # Staged: the release waits on npmjs.com until a maintainer approves it with 2FA.
+      # The trusted publisher only needs stage permission ("Allow npm publish" off).
+      - run: npm stage publish ./"$TARBALL_PREFIX"-*.tgz --access public --provenance ${{ inputs.publish-dry-run && '--dry-run' || '' }}
         env:
           TARBALL_PREFIX: ${{ inputs.tarball-prefix }}
