@@ -1,0 +1,45 @@
+# Builds the codec's WebAssembly module with the Emscripten version pinned in
+# the caller's .emsdk-version, and uploads it as the `wasm` artifact for the
+# other jobs in the run. See WORKFLOWS.md.
+name: Build WebAssembly
+
+on:
+  workflow_call:
+    inputs:
+      wasm-build:
+        description: Command that builds the WebAssembly module, run from the repository root with emcc on PATH.
+        type: string
+        required: true
+      wasm-artifact-path:
+        description: Directory the build writes to. Uploaded as the `wasm` artifact.
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  wasm:
+    name: Build WebAssembly
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - name: Check out the shared CI scripts
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .compression-js
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: bash .compression-js/scripts/ci/setup-emsdk.sh
+      - run: source ~/emsdk/emsdk_env.sh && ${{ inputs.wasm-build }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: wasm
+          path: ${{ inputs.wasm-artifact-path }}
+          if-no-files-found: error

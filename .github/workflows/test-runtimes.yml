@@ -1,0 +1,95 @@
+# Packs the package with a Linux x64 glibc prebuild, installs the tarball into
+# an empty project, and runs the smoke test on Node.js (native and forced
+# WebAssembly), Bun, Deno and Cloudflare Workers (wrangler dev). Needs the
+# `wasm` artifact from build-wasm.yml. See WORKFLOWS.md.
+name: Test the installed package on runtimes
+
+on:
+  workflow_call:
+    inputs:
+      wasm-artifact-path:
+        description: Directory the `wasm` artifact is restored to (the same value given to build-wasm.yml).
+        type: string
+        required: true
+      tarball-prefix:
+        description: Start of the file name npm pack writes, e.g. kodespire-zstd-js for @kodespire/zstd-js.
+        type: string
+        required: true
+      smoke-script:
+        description: Smoke test ES module that checks the backend named in EXPECT_BACKEND.
+        type: string
+        required: true
+      backend-env:
+        description: Environment variable that forces the WebAssembly backend when set to `wasm`, e.g. ZSTD_JS_BACKEND.
+        type: string
+        required: true
+      workerd-dir:
+        description: Directory with worker.mjs, wrangler.toml and run.mjs for the Workers test. Leave empty to skip it.
+        type: string
+        default: test/workerd
+
+permissions:
+  contents: read
+
+jobs:
+  runtimes:
+    name: Installed package on Node, Bun, Deno and Workers
+    runs-on: ubuntu-latest
+    env:
+      TARBALL_PREFIX: ${{ inputs.tarball-prefix }}
+      SMOKE_SCRIPT: ${{ inputs.smoke-script }}
+      BACKEND_ENV: ${{ inputs.backend-env }}
+      WORKERD_DIR: ${{ inputs.workerd-dir }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - name: Check out the shared CI scripts
+        uses: actions/checkout@v7
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .compression-js
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - uses: oven-sh/setup-bun@v2
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - uses: actions/download-artifact@v8
+        with:
+          name: wasm
+          path: ${{ inputs.wasm-artifact-path }}
+      - run: npm ci
+      - run: npm run build:ts
+      - run: bash .compression-js/scripts/ci/prebuild-linux.sh glibc
+      - name: Install the packed tarball into an empty project
+        run: |
+          npm pack
+          mkdir consumer && cd consumer
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund ../"$TARBALL_PREFIX"-*.tgz
+          cp "../$SMOKE_SCRIPT" smoke.mjs
+      - name: Node (native)
+        working-directory: consumer
+        run: EXPECT_BACKEND=native node smoke.mjs
+      - name: Node (forced WebAssembly)
+        working-directory: consumer
+        run: env "$BACKEND_ENV=wasm" EXPECT_BACKEND=wasm node smoke.mjs
+      - name: Bun
+        working-directory: consumer
+        run: EXPECT_BACKEND=native bun smoke.mjs
+      - name: Deno
+        working-directory: consumer
+        run: EXPECT_BACKEND=wasm deno run -A --node-modules-dir=manual smoke.mjs
+      - name: Cloudflare Workers (wrangler dev, workerd)
+        if: inputs.workerd-dir != ''
+        working-directory: consumer
+        timeout-minutes: 5
+        run: |
+          cp "../$WORKERD_DIR"/{worker.mjs,wrangler.toml,run.mjs} .
+          npm install --no-audit --no-fund wrangler@4
+          node run.mjs
