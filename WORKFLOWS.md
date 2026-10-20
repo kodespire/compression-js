@@ -143,9 +143,11 @@ Call it with `needs:` on the build-wasm and prebuild jobs.
 - **Verify:** installs the tarball into an empty project and runs the smoke test with
   `EXPECT_BACKEND=native` on macOS arm64 and x64, Windows x64 and arm64, Ubuntu x64 and arm64,
   Alpine (`node:22-alpine`) and Rocky Linux 8 (glibc 2.28). Node.js 22.
-- **Publish:** runs `npm publish <tarball> --access public --provenance` after every verify job
-  passes, when `publish` is true. With `publish-dry-run`, it runs with `--dry-run` instead.
-  Either way it first prints the OIDC claims npm trusted publishing checks.
+- **Publish:** runs `npm stage publish <tarball> --access public --provenance` after every
+  verify job passes, when `publish` is true. The version then waits in the package's stage queue
+  on npmjs.com until a maintainer approves it with 2FA (on the website, or
+  `npm stage list` / `npm stage approve <id>`). With `publish-dry-run`, it runs with `--dry-run`
+  instead. Either way it first prints the OIDC claims npm trusted publishing checks.
 
 | Input | Required | Default | |
 | --- | --- | --- | --- |
@@ -153,7 +155,7 @@ Call it with `needs:` on the build-wasm and prebuild jobs.
 | `tarball-prefix` | yes | | As for test-runtimes.yml |
 | `smoke-script` | yes | | As for test-runtimes.yml |
 | `publish` | no | `false` | Publish the tarball. zstd-js: `${{ startsWith(github.ref, 'refs/tags/v') }}` |
-| `publish-dry-run` | no | `false` | Run the publish job with `npm publish --dry-run`. Never publishes, even if `publish` is true. Fails if the version is already on npm (see below). |
+| `publish-dry-run` | no | `false` | Run the publish job with `npm stage publish --dry-run`. Never publishes, even if `publish` is true. Fails if the version is already on npm (see below). |
 
 **Permissions:** the calling job must grant `id-token: write` (and `contents: read`). A called
 workflow can't have more permissions than the job that calls it, and GitHub refuses to start a
@@ -176,6 +178,7 @@ configured with the codec repository's own `release.yml`, not `pack-verify-publi
 | Repository | `zstd-js` |
 | Workflow filename | `release.yml` |
 | Environment | (empty) |
+| Allow npm publish / Allow npm dist-tag | Leave both unchecked. The workflow only stages releases, which needs neither. |
 
 **Checked on 2026-10-20** with a manual Release run in zstd-js with `publish-dry-run` ticked
 ([run 39490031238](https://github.com/kodespire/zstd-js/actions/runs/39490031238)). The OIDC
@@ -204,9 +207,9 @@ Notes:
 
 - npm's docs say `id-token: write` must be granted to both the caller and the called workflow.
   zstd-js's `release` job and this repository's publish job both grant it.
-- `publish-dry-run` fails at `npm publish --dry-run` if the version in package.json is already
+- `publish-dry-run` fails at `npm stage publish --dry-run` if the version in package.json is already
   on npm, since npm 11 checks that even in a dry run. A real publish would fail the same way. Bump
   the version before using it to rehearse a release.
 - npm's docs describe adding a trusted publisher from the package's settings page, so a package
   needs one version on npm before its trusted publisher can be added. The first version of each codec package has to
-  be published another way (for example by hand). `@kodespire/zstd-js@0.1.0` is already on npm.
+  be published another way (for example by hand). All five codec packages were first published by hand on 2026-10-20.
