@@ -191,10 +191,14 @@ token minted inside this repository's publish job carried:
 }
 ```
 
-`repository` and `workflow_ref` are what npm matches against the trusted publisher. Both name
-zstd-js and its release.yml, so publishing from the shared job works with the configuration
-above. `job_workflow_ref` records that the job itself came from here. That run's runner had npm
-11.19.1, and trusted publishing needs 11.5.1 or later.
+- **Observed:** `repository` and `workflow_ref`, the claims npm matches against the trusted
+  publisher, name zstd-js and its release.yml. `job_workflow_ref` records that the job itself
+  came from here. That run's runner had npm 11.19.1, and trusted publishing needs 11.5.1 or
+  later.
+- **Expected from npm's docs:** npm checks the calling workflow, so it should accept these
+  claims with the configuration above.
+- **Not yet tested:** npm exchanging the token for a publish token. A dry run never reaches
+  that step, so the first tag-triggered publish will be the first real test.
 
 Notes:
 
