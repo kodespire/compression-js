@@ -40,12 +40,12 @@ export const formats: readonly Format[] = Object.freeze(Object.keys(FORMAT_INFO)
 export const codecs: readonly Codec[] = ['zstd', 'lz4', 'snappy', 'brotli', 'gzip'];
 
 /**
- * Codecs whose async functions take their input after an internal await (snappy-js,
- * brotli-js and gzip-js 0.1.0), so a caller that reuses its buffer right after the call
- * changes what gets compressed. Their inputs are copied before the call. zstd-js 0.1.1
- * and lz4-js 0.1.0 read the input before returning.
+ * Codecs whose async functions take their input after an internal await (snappy-js
+ * 0.2.0), so a caller that reuses its buffer right after the call changes what gets
+ * compressed. Their inputs are copied before the call. The other codecs read the input
+ * before returning (zstd-js since 0.1.1, brotli-js and gzip-js since 0.2.0).
  */
-export const readsInputLate: ReadonlySet<Codec> = new Set(['snappy', 'brotli', 'gzip']);
+export const readsInputLate: ReadonlySet<Codec> = new Set(['snappy']);
 
 export function formatInfo(format: unknown, fn: string, stream = false): FormatInfo {
   const info = typeof format === 'string' && Object.hasOwn(FORMAT_INFO, format)

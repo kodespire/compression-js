@@ -267,6 +267,19 @@ function connect(inner: TransformStream<Bytes, Uint8Array>, controller: Transfor
   };
 }
 
+/**
+ * Bare React Native has no TransformStream (Expo installs one). Say so, as the codecs do,
+ * instead of failing with a ReferenceError.
+ */
+function checkStreams(fn: string): void {
+  if (typeof TransformStream === 'undefined') {
+    throw new TypeError(
+      `${fn}: this runtime has no TransformStream. On React Native, install a polyfill such as ` +
+        "web-streams-polyfill and import 'web-streams-polyfill/polyfill' before using streams.",
+    );
+  }
+}
+
 /** A stream that imports the codec when it starts, then passes everything through the codec's stream. */
 function deferredStream(codec: Codec, open: (api: CodecApi) => TransformStream<Bytes, Uint8Array>): TransformStream<Bytes, Uint8Array> {
   let link: Link | undefined;
@@ -300,6 +313,7 @@ export function createCompressStream<F extends StreamFormat>(
   format: F,
   options?: CompressStreamOptions<F> | number,
 ): TransformStream<Bytes, Uint8Array> {
+  checkStreams('createCompressStream');
   const info = formatInfo(format, 'createCompressStream', true);
   const codecOptions = argumentOptions(options, info, 'createCompressStream', true);
   const api = loadedCodec(info.codec);
@@ -322,6 +336,7 @@ export function createDecompressStream<F extends StreamFormat | 'auto'>(
   format: F,
   options?: DecompressStreamOptions<F>,
 ): TransformStream<Bytes, Uint8Array> {
+  checkStreams('createDecompressStream');
   if (format === 'auto') {
     checkOptionsObject(options, 'createDecompressStream');
     return autoDecompressStream(autoOptions(options ?? {}, 'createDecompressStream'));

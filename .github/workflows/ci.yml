@@ -60,4 +60,22 @@ jobs:
       - name: Pack, install into an empty project, and run everywhere
         run: npm run test:installed
         env:
+          RUNTIMES: node,node-wasm,bun,deno,workerd,browser
           BROWSERS: chromium,firefox,webkit
+
+  react-native:
+    name: React Native (Metro bundles for iOS and Android, Hermes)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # No device: see test/installed/react-native/run.mjs for what this checks.
+      - name: Bundle the packed package with Metro (React Native 0.84 and 0.88) and run the checks
+        run: npm run test:installed
+        env:
+          RUNTIMES: react-native
