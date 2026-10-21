@@ -3,7 +3,7 @@
 [![CI](https://github.com/kodespire/compression-js/actions/workflows/ci.yml/badge.svg)](https://github.com/kodespire/compression-js/actions/workflows/ci.yml)
 
 Compression libraries for JavaScript that use the official C implementations, with one API on
-Node.js, Bun, Deno, browsers and edge runtimes.
+Node.js, Bun, Deno, browsers, edge runtimes and React Native.
 
 Each codec lives in its own repository and npm package. This repository holds:
 - **`@kodespire/compression-js`:** one API across every codec, with format detection (below)
@@ -14,12 +14,12 @@ Each codec lives in its own repository and npm package. This repository holds:
 
 | Codec | Repository | npm | Upstream library | Status |
 | --- | --- | --- | --- | --- |
-| Zstandard | [zstd-js](https://github.com/kodespire/zstd-js) | `@kodespire/zstd-js` | [facebook/zstd](https://github.com/facebook/zstd) | 0.1 |
-| LZ4 | [lz4-js](https://github.com/kodespire/lz4-js) | `@kodespire/lz4-js` | [lz4/lz4](https://github.com/lz4/lz4) | 0.1 |
-| Snappy | [snappy-js](https://github.com/kodespire/snappy-js) | `@kodespire/snappy-js` | [google/snappy](https://github.com/google/snappy) | 0.1 |
-| Brotli | [brotli-js](https://github.com/kodespire/brotli-js) | `@kodespire/brotli-js` | [google/brotli](https://github.com/google/brotli) | 0.1 |
-| Gzip / zlib / deflate | [gzip-js](https://github.com/kodespire/gzip-js) | `@kodespire/gzip-js` | [madler/zlib](https://github.com/madler/zlib) | 0.1 |
-| All of the above | compression-js | `@kodespire/compression-js` | | 0.1 |
+| Zstandard | [zstd-js](https://github.com/kodespire/zstd-js) | `@kodespire/zstd-js` | [facebook/zstd](https://github.com/facebook/zstd) | 0.2 |
+| LZ4 | [lz4-js](https://github.com/kodespire/lz4-js) | `@kodespire/lz4-js` | [lz4/lz4](https://github.com/lz4/lz4) | 0.2 |
+| Snappy | [snappy-js](https://github.com/kodespire/snappy-js) | `@kodespire/snappy-js` | [google/snappy](https://github.com/google/snappy) | 0.2 |
+| Brotli | [brotli-js](https://github.com/kodespire/brotli-js) | `@kodespire/brotli-js` | [google/brotli](https://github.com/google/brotli) | 0.2 |
+| Gzip / zlib / deflate | [gzip-js](https://github.com/kodespire/gzip-js) | `@kodespire/gzip-js` | [madler/zlib](https://github.com/madler/zlib) | 0.2 |
+| All of the above | compression-js | `@kodespire/compression-js` | | 0.2 |
 
 ## @kodespire/compression-js
 
@@ -145,14 +145,38 @@ its `init(source)` through the namespace before using it.
 
 ### Runtimes and bundlers
 
-It runs wherever the codecs do: Node.js 22.12 and later and Bun (native addons, with WebAssembly
-as a fallback), and Deno, browsers and Cloudflare Workers (WebAssembly). CI installs the packed
-tarball and tests it on Node.js (native and forced WebAssembly), Bun, Deno, Workers
-(`wrangler dev`), and Chromium, Firefox and WebKit through Vite, both `vite build` and the dev server.
+It runs wherever the codecs do:
+- **Node.js 22.12 and later, and Bun:** native addons, with WebAssembly as a fallback.
+- **Deno, browsers and Cloudflare Workers:** WebAssembly.
+- **React Native:** each codec's C++ TurboModule (see [React Native](#react-native)).
+
+CI installs the packed tarball and tests it on Node.js (native and forced WebAssembly), Bun, Deno,
+Workers (`wrangler dev`), and Chromium, Firefox and WebKit through Vite, both `vite build` and the
+dev server. It also bundles it with Metro for React Native.
 
 - **Browsers:** each codec becomes its own chunk with its own `.wasm`, fetched on first use. With Vite the entry chunk is about 10 KiB, and an app that only uses gzip downloads only gzip's 70 KiB module. Vite needs no configuration.
 - **Workers:** wrangler bundles every codec the package can import, so a Worker carries all five modules even if it uses one: about 1.5 MiB (540 KiB gzipped), where gzip-js alone is 87 KiB. That fits Workers' limits; for the smallest Worker, use a codec package directly.
-- **Install size:** the package depends on all five codecs, which ship native binaries for 8 platforms: about 9.3 MB to download and 22 MB on disk. The binaries are never bundled for the web. If disk size matters, install only the codec packages you need.
+- **Install size:** the package depends on all five codecs, which ship native binaries for 8 platforms (and, since 0.2, their React Native sources): about 11 MB to download and 28 MB on disk. The binaries are never bundled for the web. If disk size matters, install only the codec packages you need.
+
+### React Native
+
+On iOS and Android (React Native 0.84 or later, New Architecture), Metro resolves each codec to
+its `react-native` entry: a C++ TurboModule built from the same C code. Codecs still load on first use.
+
+```sh
+npm install @kodespire/compression-js @kodespire/zstd-js @kodespire/gzip-js   # the codecs you use
+cd ios && pod install
+```
+
+Then rebuild the app.
+
+- **List the codecs you use in your app's dependencies.** The React Native CLI only links native code from an app's direct dependencies. A codec that is only installed through this package has its JavaScript bundled but no native module, so its calls throw the codec's `ERR_<CODEC>_NOT_INITIALIZED`, with a message saying the native module is not in the app. Expo's autolinking also follows dependencies of dependencies, so there the umbrella alone is enough. Expo Go cannot load native code: use a development build.
+- **Synchronous calls need `init` first**, as everywhere: `await init('zstd')` once, then `compressSync('zstd', data)` runs on the native module.
+- **Streams need a `TransformStream`**, which Hermes doesn't have. Expo installs one. In bare React Native, `import 'web-streams-polyfill/polyfill'` once at startup. Without it, `createCompressStream` and `createDecompressStream` throw a `TypeError` that says so.
+- **Bundle size:** Metro puts all five codecs' JavaScript in the bundle (about 165 KiB before minification), whichever you use. Native code is only in the app for the codecs it lists.
+- **Web (Expo web, react-native-web):** the codecs use WebAssembly, as in any browser. Metro doesn't copy `.wasm` files: serve each codec's `dist/<codec>.wasm` and call its `init(url)` through its [namespace](#codec-namespaces) first.
+
+CI bundles an app that uses this package with Metro for iOS and Android, on React Native 0.84 and 0.88. It checks that every codec resolves to its `react-native` entry, with no Node.js modules, and that Hermes compiles the bundle. It also runs a bundle in Node.js with the native modules stubbed out, and checks that each codec is loaded only when first used. Device tests are in each codec's repository.
 
 ## Design
 
@@ -172,7 +196,7 @@ Every codec package works the same way:
 
 The umbrella package adds no compression code of its own: it maps formats to codecs, detects
 formats, and loads codecs on demand. It is plain JavaScript, so its CI ([ci.yml](.github/workflows/ci.yml))
-builds no WebAssembly or native code.
+and release ([release.yml](.github/workflows/release.yml)) build no WebAssembly or native code.
 
 ## Development
 
@@ -181,13 +205,32 @@ npm install
 npm run build
 npm test                  # unit tests (vitest) against dist/
 npm run typecheck         # includes the type tests in test/types.test-d.ts
-npm run test:installed    # packs, installs and runs on Node, Bun, Deno, Workers and Chromium
+npm run test:installed    # packs, installs and runs on Node, Bun, Deno, Workers, Chromium and Metro
 ```
 
-`test:installed` uses `bun` and `deno` from `PATH` and installs Vite, Playwright and wrangler in a
-temporary project. `RUNTIMES` and `BROWSERS` choose what runs. `CODEC_TARBALLS=<dir>` installs codec
+`test:installed` uses `bun` and `deno` from `PATH` and installs Vite, Playwright, wrangler and
+React Native in temporary projects. `RUNTIMES`, `BROWSERS` and `RN_VERSIONS` choose what runs. `CODEC_TARBALLS=<dir>` installs codec
 tarballs from a directory instead of npm. The fixtures in `test/fixtures` come from the official
 tools: see its [README](test/fixtures/README.md).
+
+## Releasing
+
+[release.yml](.github/workflows/release.yml) runs on a `v*` tag that matches `version` in
+package.json. It tests, packs, installs the tarball and runs it on Node.js (Linux, macOS, Windows),
+then stages the release on npm with `npm stage publish --provenance`. The release waits on npmjs.com
+until a maintainer approves it with 2FA. Pull requests that change the workflow run it with
+`--dry-run`.
+
+npm trusted publishing must be set up once, on npmjs.com under the package's Settings > Trusted
+publishing > GitHub Actions:
+
+| Field | Value |
+| --- | --- |
+| Organization or user | `kodespire` |
+| Repository | `compression-js` |
+| Workflow filename | `release.yml` |
+| Environment | (blank) |
+| Allow npm publish, Allow npm dist-tag | both unchecked (staging needs neither) |
 
 ## License
 

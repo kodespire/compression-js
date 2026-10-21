@@ -83,6 +83,22 @@ describe('arguments', () => {
     expect(thrown(() => c.createDecompressStream('zstd', 5 as never)).message).toBe('createDecompressStream: options must be an object');
   });
 
+  it('streams without a TransformStream (bare React Native) say so', () => {
+    const saved = Object.getOwnPropertyDescriptor(globalThis, 'TransformStream')!;
+    delete (globalThis as { TransformStream?: unknown }).TransformStream;
+    try {
+      expect(() => c.createCompressStream('zstd')).toThrow(
+        new TypeError(
+          "createCompressStream: this runtime has no TransformStream. On React Native, install a polyfill such as web-streams-polyfill and import 'web-streams-polyfill/polyfill' before using streams.",
+        ),
+      );
+      expect(() => c.createDecompressStream('auto')).toThrow(/^createDecompressStream: this runtime has no TransformStream/);
+      expect(() => c.createDecompressStream('gzip')).toThrow(TypeError);
+    } finally {
+      Object.defineProperty(globalThis, 'TransformStream', saved);
+    }
+  });
+
   it('non-binary data is a TypeError, as in the codecs', async () => {
     await expect(c.compress('zstd', 123 as never)).rejects.toThrow('data must be an ArrayBuffer, a typed array, a DataView or a Buffer');
     await expect(c.decompress('28b52ffd' as never)).rejects.toThrow(TypeError);

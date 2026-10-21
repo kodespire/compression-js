@@ -1,6 +1,6 @@
 {
   "name": "@kodespire/compression-js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "One API for zstd, gzip, zlib, deflate, brotli, LZ4 and snappy on Node.js, Bun, Deno, browsers and edge runtimes, with format detection. Loads only the codecs you use.",
   "keywords": [
     "compression",
@@ -68,11 +68,11 @@
     "test:installed": "node test/installed/run.mjs"
   },
   "dependencies": {
-    "@kodespire/brotli-js": "^0.1.0",
-    "@kodespire/gzip-js": "^0.1.0",
-    "@kodespire/lz4-js": "^0.1.0",
-    "@kodespire/snappy-js": "^0.1.0",
-    "@kodespire/zstd-js": "^0.1.1"
+    "@kodespire/brotli-js": "^0.2.0",
+    "@kodespire/gzip-js": "^0.2.0",
+    "@kodespire/lz4-js": "^0.2.0",
+    "@kodespire/snappy-js": "^0.2.0",
+    "@kodespire/zstd-js": "^0.2.1"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",

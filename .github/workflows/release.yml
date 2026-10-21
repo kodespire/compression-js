@@ -1,0 +1,100 @@
+# Releases @kodespire/compression-js. On a v* tag: tests, packs, checks that the tarball
+# installs and runs on Node.js, and stages it on npm, where the release waits until a
+# maintainer approves it on npmjs.com. The package is plain JavaScript, so there is
+# nothing to build but TypeScript; the shared workflows next to this file are for the
+# codec repositories and are not used here.
+#
+# npm trusted publisher for the package: kodespire / compression-js / release.yml, no
+# environment (README: Releasing). Pull requests that change this file, and manual runs,
+# do everything but stage: `npm stage publish --dry-run`.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths: ['.github/workflows/release.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    name: Test and pack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - name: The tag matches the package version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: test "v$(node -p 'require("./package.json").version')" = "$GITHUB_REF_NAME"
+      - run: npm ci
+      - run: npm run build
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm pack
+      - uses: actions/upload-artifact@v7
+        with:
+          name: tarball
+          path: kodespire-compression-js-*.tgz
+          if-no-files-found: error
+
+  verify:
+    name: Verify on Node ${{ matrix.node }} (${{ matrix.os }})
+    needs: pack
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, node: '22.12' }
+          - { os: ubuntu-latest, node: '24' }
+          - { os: macos-latest, node: '24' }
+          - { os: windows-latest, node: '24' }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: test/installed/smoke.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: tarball
+      # Outside the checkout, so nothing resolves from the repository by accident.
+      - name: Install the tarball into an empty project and run the smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          consumer="$RUNNER_TEMP/consumer"
+          mkdir -p "$consumer"
+          cp test/installed/smoke.mjs "$consumer/smoke.mjs"
+          cp kodespire-compression-js-*.tgz "$consumer/package.tgz"
+          cd "$consumer"
+          npm init -y > /dev/null
+          npm install --no-audit --no-fund ./package.tgz
+          EXPECT_BACKEND=native node smoke.mjs
+
+  publish:
+    name: Stage on npm${{ !startsWith(github.ref, 'refs/tags/v') && ' (dry run)' || '' }}
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing and provenance
+    steps:
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@v8
+        with:
+          name: tarball
+      # npm stage publish needs npm 11.15 or later.
+      - run: npm install -g npm@^11.15
+      - run: npm stage publish ./kodespire-compression-js-*.tgz --access public --provenance ${{ !startsWith(github.ref, 'refs/tags/v') && '--dry-run' || '' }}
